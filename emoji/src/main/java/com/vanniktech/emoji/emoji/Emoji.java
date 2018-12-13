@@ -6,6 +6,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.content.res.AppCompatResources;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,9 +21,19 @@ public class Emoji implements Serializable {
   @DrawableRes private final int resource;
   @NonNull private final List<Emoji> variants;
   @Nullable private Emoji base;
+  @Nullable private Drawable drawable;
 
   public Emoji(@NonNull final int[] codePoints, @DrawableRes final int resource) {
-    this(codePoints, resource, new Emoji[0]);
+    this(String.valueOf(codePoints), resource, new Emoji[0]);
+  }
+
+  public Emoji(final String code, @Nullable final Drawable drawable) {
+    this(":"+code+":", -1, new Emoji[0]);
+    this.drawable = drawable;
+  }
+
+  public void setDrawable(Drawable drawable){
+    this.drawable = drawable;
   }
 
   public Emoji(final int codePoint, @DrawableRes final int resource) {
@@ -30,11 +41,11 @@ public class Emoji implements Serializable {
   }
 
   public Emoji(final int codePoint, @DrawableRes final int resource, final Emoji... variants) {
-    this(new int[]{codePoint}, resource, variants);
+    this(String.valueOf(codePoint), resource, variants);
   }
 
-  public Emoji(@NonNull final int[] codePoints, @DrawableRes final int resource, final Emoji... variants) {
-    this.unicode = new String(codePoints, 0, codePoints.length);
+  public Emoji(@NonNull final String code, @DrawableRes final int resource, final Emoji... variants) {
+    this.unicode = code;//  new String(codePoints, 0, codePoints.length);
     this.resource = resource;
     // asList seems to always allocate a new object, even for empty lists.
     this.variants = variants.length == 0 ? Collections.<Emoji>emptyList() : asList(variants);
@@ -56,6 +67,9 @@ public class Emoji implements Serializable {
   }
 
   @NonNull public Drawable getDrawable(final Context context) {
+    if (drawable != null){
+      return drawable.getConstantState().newDrawable();
+    }
     return AppCompatResources.getDrawable(context, resource);
   }
 

@@ -7,9 +7,17 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.DimenRes;
 import android.support.annotation.Px;
 import android.support.v7.widget.AppCompatEditText;
+import android.text.Editable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
+
 import com.vanniktech.emoji.emoji.Emoji;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /** Reference implementation for an EditText with emoji support. */
 @SuppressWarnings("CPD-START") public class EmojiEditText extends AppCompatEditText implements EmojiEditTextInterface {
@@ -40,7 +48,6 @@ import com.vanniktech.emoji.emoji.Emoji;
         a.recycle();
       }
     }
-
     setText(getText());
   }
 
@@ -48,6 +55,17 @@ import com.vanniktech.emoji.emoji.Emoji;
     final Paint.FontMetrics fontMetrics = getPaint().getFontMetrics();
     final float defaultEmojiSize = fontMetrics.descent - fontMetrics.ascent;
     EmojiManager.getInstance().replaceWithImages(getContext(), getText(), emojiSize, defaultEmojiSize);
+  }
+
+  public Editable getTextReplaced(){
+    String textOrigin = getText().toString();
+    String pattern = ":[^\\s]*?:";
+    Matcher m = Pattern.compile(pattern)
+            .matcher(textOrigin);
+    while (m.find()) {
+      textOrigin = textOrigin.replace(m.group(), String.valueOf(m.group().hashCode()));
+    }
+    return new Editable.Factory().newEditable(textOrigin);
   }
 
   @Override public float getEmojiSize() {

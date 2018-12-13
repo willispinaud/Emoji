@@ -3,6 +3,7 @@ package com.vanniktech.emoji;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -16,11 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
 import com.vanniktech.emoji.emoji.EmojiCategory;
 import com.vanniktech.emoji.listeners.OnEmojiBackspaceClickListener;
 import com.vanniktech.emoji.listeners.OnEmojiClickListener;
 import com.vanniktech.emoji.listeners.OnEmojiLongClickListener;
 import com.vanniktech.emoji.listeners.RepeatListener;
+
 import java.util.concurrent.TimeUnit;
 
 @SuppressLint("ViewConstructor") public final class EmojiView extends LinearLayout implements ViewPager.OnPageChangeListener {
@@ -65,7 +68,11 @@ import java.util.concurrent.TimeUnit;
     emojiTabs = new ImageButton[categories.length + 2];
     emojiTabs[0] = inflateButton(context, R.drawable.emoji_recent, emojisTab);
     for (int i = 0; i < categories.length; i++) {
-      emojiTabs[i + 1] = inflateButton(context, categories[i].getIcon(), emojisTab);
+      if (categories[i].getDrawable() != null){
+        emojiTabs[i + 1] = inflateButton(context, categories[i].getDrawable(), emojisTab);
+      }else {
+        emojiTabs[i + 1] = inflateButton(context, categories[i].getIcon(), emojisTab);
+      }
     }
     emojiTabs[emojiTabs.length - 1] = inflateButton(context, R.drawable.emoji_backspace, emojisTab);
 
@@ -101,6 +108,17 @@ import java.util.concurrent.TimeUnit;
     final ImageButton button = (ImageButton) LayoutInflater.from(context).inflate(R.layout.emoji_category, parent, false);
 
     button.setImageDrawable(AppCompatResources.getDrawable(context, icon));
+    button.setColorFilter(themeIconColor, PorterDuff.Mode.SRC_IN);
+
+    parent.addView(button);
+
+    return button;
+  }
+
+  private ImageButton inflateButton(final Context context, Drawable icon, final ViewGroup parent) {
+    final ImageButton button = (ImageButton) LayoutInflater.from(context).inflate(R.layout.emoji_category, parent, false);
+
+    button.setImageDrawable(icon);
     button.setColorFilter(themeIconColor, PorterDuff.Mode.SRC_IN);
 
     parent.addView(button);
