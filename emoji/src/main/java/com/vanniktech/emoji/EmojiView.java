@@ -69,7 +69,11 @@ import java.util.concurrent.TimeUnit;
     emojiTabs[0] = inflateButton(context, R.drawable.emoji_recent, emojisTab);
     for (int i = 0; i < categories.length; i++) {
       if (categories[i].getDrawable() != null){
-        emojiTabs[i + 1] = inflateButton(context, categories[i].getDrawable(), emojisTab);
+        try {
+          emojiTabs[i + 1] = inflateButton(context, categories[i].getDrawable().getCompleted(), emojisTab);
+        }catch (Exception e){
+          emojiTabs[i + 1] = inflateButton(context, categories[i].getIcon(), emojisTab);
+        }
       }else {
         emojiTabs[i + 1] = inflateButton(context, categories[i].getIcon(), emojisTab);
       }

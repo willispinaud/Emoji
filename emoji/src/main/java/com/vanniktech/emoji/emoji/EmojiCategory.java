@@ -4,6 +4,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import kotlinx.coroutines.Deferred;
+
 /**
  * Interface for defining a category.
  *
@@ -23,5 +25,5 @@ public interface EmojiCategory {
    * @since 0.4.0
    */
   @DrawableRes int getIcon();
-  Drawable getDrawable();
+  Deferred<Drawable> getDrawable();
 }

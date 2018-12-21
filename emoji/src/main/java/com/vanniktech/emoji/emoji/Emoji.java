@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import kotlinx.coroutines.Deferred;
+
 import static java.util.Arrays.asList;
 
 public class Emoji implements Serializable {
@@ -21,18 +23,18 @@ public class Emoji implements Serializable {
   @DrawableRes private final int resource;
   @NonNull private final List<Emoji> variants;
   @Nullable private Emoji base;
-  @Nullable private Drawable drawable;
+  @Nullable private Deferred<Drawable> drawable;
 
   public Emoji(@NonNull final int[] codePoints, @DrawableRes final int resource) {
     this(String.valueOf(codePoints), resource, new Emoji[0]);
   }
 
-  public Emoji(final String code, @Nullable final Drawable drawable) {
+  public Emoji(final String code, @Nullable final Deferred<Drawable> drawable) {
     this(":"+code+":", -1, new Emoji[0]);
     this.drawable = drawable;
   }
 
-  public void setDrawable(Drawable drawable){
+  public void setDrawable(Deferred<Drawable> drawable){
     this.drawable = drawable;
   }
 
@@ -68,7 +70,7 @@ public class Emoji implements Serializable {
 
   @NonNull public Drawable getDrawable(final Context context) {
     if (drawable != null){
-      return drawable.getConstantState().newDrawable();
+      return drawable.getCompleted().getConstantState().newDrawable();
     }
     return AppCompatResources.getDrawable(context, resource);
   }
